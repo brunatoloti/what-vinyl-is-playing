@@ -62,10 +62,8 @@ Limitação: se você repetir a mesma faixa imediatamente, sem outra faixa ident
 
 1. Suba os arquivos para um repositório, incluindo `.streamlit/config.toml` e excluindo `secrets.toml`.
 2. Crie o app com `app.py` como entrada e Python 3.11 ou 3.12.
-3. Copie o conteúdo preenchido de `secrets.toml.example` para os Secrets do app.
+3. Copie o conteúdo preenchido de `secrets.toml` para os Secrets do app.
 4. Abra o app por HTTPS e autorize o microfone.
-
-WebRTC pode precisar de um servidor TURN, conforme a rede e a hospedagem. Há um exemplo comentado em Secrets. STUN sozinho não garante conexão em todas as redes. Se START não estabelecer a captura, configure TURN ou use Por botão. Para acesso pelo celular ao app em outro computador, use HTTPS; HTTP de um IP da rede local normalmente não libera o microfone.
 
 O app tem login privado para uma única conta, configurada nos Secrets. Reconhecimento, microfone e histórico só são criados após a autenticação. Sem configuração válida, o acesso fica bloqueado.
 
@@ -76,38 +74,3 @@ Se o Sheets falhar, o registro fica pendente na memória da sessão e o app tent
 O áudio não é salvo na planilha ou em disco pela aplicação. Ele transita pelo servidor Streamlit. O ShazamIO processa o trecho e consulta o serviço remoto, sujeito às políticas desse fornecedor. Credenciais ficam nos Secrets da hospedagem. Preferências temporárias e buffers existem apenas na memória da sessão; o histórico é a única informação persistida pelo app.
 
 O catálogo pode retornar uma reedição, coletânea ou edição digital diferente do LP físico. A identificação não determina prensagem, país, número de catálogo ou lado do disco.
-
-## Verificação
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-Os testes verificam normalização dos metadados, fallback de capa, geração de WAV e deduplicação. O uso real de microfone, TURN, ShazamIO e Google Sheets precisa ser validado com suas credenciais e seu navegador.
-
-Documentação consultada:
-
-- https://github.com/streamlit/gsheets-connection
-- https://github.com/whitphx/streamlit-webrtc
-- https://github.com/shazamio/ShazamIO
-
-
-## Configurar seu login privado
-
-1. Após instalar as dependências, execute `python gerar_senha.py` no seu computador.
-2. Crie uma senha com pelo menos 12 caracteres. O terminal não exibe nem salva sua senha.
-3. Copie o hash gerado para os Secrets, junto das credenciais existentes do Sheets:
-
-```toml
-[access]
-username = "seu_usuario"
-password_hash = "COLE_O_HASH_GERADO_AQUI"
-```
-
-O hash usa PBKDF2-SHA256, sal aleatório e 600 mil iterações. Não coloque a senha original na planilha, no código ou no GitHub. As credenciais são configuração privada da hospedagem; os dados de músicas continuam apenas no Google Sheets.
-
-Abra o app e entre com o usuário escolhido e a senha original. Não existe cadastro público. O botão Sair encerra o acesso e limpa os dados da sessão, inclusive o buffer do microfone. Registros ainda pendentes podem ser perdidos ao sair; o app avisa quando houver pendências.
-
-O login vale para a sessão atual do navegador, sem cookie de login persistente. Recarregar a página ou perder a sessão pode exigir nova entrada. Alterar usuário ou hash nos Secrets invalida sessões anteriores na próxima execução. Cinco erros causam pausa de 30 segundos naquela sessão; isso não é um bloqueio global contra ataques distribuídos. Para uma camada adicional, restrinja também o acesso ao app nas opções da hospedagem, quando disponível.
-
-As capas são buscadas de URLs públicas do catálogo, mas o histórico e as consultas da aplicação ficam protegidos pelo login. Use HTTPS na hospedagem.
