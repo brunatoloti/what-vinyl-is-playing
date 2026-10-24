@@ -1,0 +1,8 @@
+streamlit==1.66.1
+streamlit-webrtc==0.79.0
+st-gsheets-connection==0.1.0
+pandas>=2.2,<3
+numpy>=1.26,<3
+av==16.1.0
+shazamio==0.8.1
+tzdata>=2024.1

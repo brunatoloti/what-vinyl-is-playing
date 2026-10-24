@@ -1,0 +1,8 @@
+.streamlit/secrets.toml
+.venv/
+__pycache__/
+
+gerar_senha.py
+tests
+venv
+historico_modelo.csv
